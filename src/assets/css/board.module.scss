@@ -1,5 +1,10 @@
 .board {
-   width: 1000px;
-   height: 90%;
-   background-color: red;
+   width: fit-content;
+   height: fit-content;
+   background-color: #fff;
+   border-radius: 20px;
+   padding: 20px;
+   display: grid;
+   grid-template-columns: repeat(5, 1fr);
+   gap: 10px;
 }
