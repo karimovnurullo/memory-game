@@ -1,8 +1,7 @@
 .item {
   position: relative;
-  width: 150px;
-  height: 150px;
-  background-color: #fff;
+  width: 120px;
+  height: 120px;
   overflow: hidden;
   border-radius: 20px;
   cursor: pointer;
@@ -14,6 +13,9 @@
   object-fit: cover;
   display: block;
 }
+.find {
+  opacity: 0.5;
+}
 .item .cover {
   transform: rotateY(90deg);
   position: absolute;
@@ -21,5 +23,14 @@
 
 .flipped .cover {
   transform: rotateY(0deg);
-  background-color: #fff;
+}
+
+.item .main-img {
+  transition: all ease-in 0.2s;
+  transition-delay: 0.2s;
+}
+
+.flipped .main-img {
+  transform: rotateY(90deg);
+  transition-delay: 0;
 }

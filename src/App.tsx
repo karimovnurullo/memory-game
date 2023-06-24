@@ -1,48 +1,109 @@
 import { Card } from "./components";
-// Img1,Img2,Img3,Img4,Img5,Img6,Img7,Img8,Img9,Img10,
 import classes from "./assets/css/board.module.scss";
-import { useState } from "react";
-interface Image {
+import { useEffect, useState } from "react";
+
+export interface Image {
   src: string;
+  matched: boolean;
 }
 
-interface CardData extends Image {
+export interface CardData extends Image {
   id: number;
 }
 
 function App() {
   const [cards, setCards] = useState<CardData[]>([]);
   const [turn, setTurn] = useState(0);
+  const [disabled, setDisabled] = useState(false);
+  const [choiceOne, setChoiceOne] = useState<CardData | null>(null);
+  const [choiceTwo, setChoiceTwo] = useState<CardData | null>(null);
 
   const images: Image[] = [
-    { src: "1" },
-    { src: "2" },
-    { src: "3" },
-    { src: "4" },
-    { src: "5" },
-    { src: "6" },
-    { src: "7" },
-    { src: "8" },
-    { src: "9" },
-    { src: "10" },
+    { src: "1", matched: false },
+    { src: "2", matched: false },
+    { src: "3", matched: false },
+    { src: "4", matched: false },
+    { src: "5", matched: false },
+    { src: "6", matched: false },
+    { src: "7", matched: false },
+    { src: "8", matched: false },
+    { src: "9", matched: false },
+    { src: "10", matched: false },
   ];
-  let arr = [...images, ...images]
-    .sort(() => Math.random() - 0.5)
-    .map((card) => ({ ...card, id: Math.random() }));
-  // setCards(arr);
-  // setTurn(0);
 
-  const hundleCards = () => {};
-  const handleCardClick = () => {
-    console.log("Card clicked");
+  // useEffect(() => {
+
+  const shuffleCards = () => {
+    let arr = [...images, ...images]
+      .sort(() => Math.random() - 0.5)
+      .map((card) => ({ ...card, id: Math.random() }));
+
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setCards(arr);
+    setTurn(0);
   };
+  // }, []);
+
+  const handleChoice = (card: CardData) => {
+    if (!choiceOne) {
+      setChoiceOne(card);
+    } else if (!choiceTwo) {
+      setChoiceTwo(card);
+    }
+  };
+
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      setDisabled(true);
+      if (choiceOne.src === choiceTwo.src) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.src === choiceOne.src) {
+              return { ...card, matched: true };
+            } else {
+              return card;
+            }
+          });
+        });
+        resetTurn();
+      } else {
+        setTimeout(() => {
+          resetTurn();
+        }, 1000);
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurn((prevTurn) => prevTurn + 1);
+    setDisabled(false);
+  };
+  useEffect(() => {
+    shuffleCards();
+  }, []);
+
   return (
-    <div className={classes.board}>
-      {arr.map(({ src, id }, idx) => (
-        <Card card={handleCardClick} src={src} flipped={true} key={id} />
-      ))}
-      {/* <Card card={handleCardClick} src={"1"} flipped={true} /> */}
-    </div>
+    <>
+      <div className={classes.board}>
+        <div className={classes.title}>
+          <h2>Memory game</h2>
+          <span>Turn {turn}</span>
+          <button onClick={shuffleCards}>New game</button>
+        </div>
+        {cards.map((card) => (
+          <Card
+            card={card}
+            flipped={card === choiceOne || card === choiceTwo || card.matched}
+            key={card.id}
+            onChoice={handleChoice}
+            disabled={disabled}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
